@@ -1,7 +1,7 @@
 # Личный проект «Шесть городов»
 
 * Студент: [Kirill Podryadov](https://up.htmlacademy.ru/nodejs-api/5/user/1622797).
-* Наставник: `Неизвестно`.
+* Наставник: [Владислав Поклонский](https://htmlacademy.ru/profile/id2210683).
 
 ---
 
