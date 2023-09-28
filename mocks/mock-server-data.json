@@ -1,0 +1,133 @@
+{
+  "api": {
+    "title": [
+      "Curabitur egestas nunc sed libero",
+      "Proin nisl sem, consequat nec",
+      "Donec feugiat metus sit amet",
+      "Cum sociis natoque penatibus et magnis",
+      "Proin non massa non ante bibendum"
+    ],
+    "description": [
+      "lacinia mattis. Integer eu lacus. Quisque imperdiet, erat nonummy",
+      "Integer mollis. Integer tincidunt aliquam arcu.",
+      "libero mauris, aliquam eu, accumsan sed, facilisis",
+      "eget, ipsum. Donec sollicitudin adipiscing ligula. Aenean gravida nunc sed",
+      "Mauris vestibulum, neque sed dictum eleifend, nunc risus"
+    ],
+    "city": [
+      "Paris",
+      "Cologne",
+      "Brussels",
+      "Amsterdam",
+      "Hamburg",
+      "Dusseldorf"
+    ],
+    "preview": [
+      "paths/preview/previewImage-1.jpg",
+      "paths/preview/previewImage-2.jpg",
+      "paths/preview/previewImage-3.jpg",
+      "paths/preview/previewImage-4.jpg",
+      "paths/preview/previewImage-5.jpg"
+    ],
+    "photos": [
+      "paths/placeImages/placeImage-1.jpg",
+      "paths/placeImages/placeImage-2.jpg",
+      "paths/placeImages/placeImage-3.jpg",
+      "paths/placeImages/placeImage-4.jpg",
+      "paths/placeImages/placeImage-5.jpg"
+    ],
+    "isPremium": [
+      "true",
+      "false"
+    ],
+    "isFavorite": [
+      "true",
+      "false"
+    ],
+    "rating": [
+      "8",
+      "4",
+      "5",
+      "10",
+      "9"
+    ],
+    "rooms": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "guests": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "price": [
+      "3500",
+      "10000",
+      "45000",
+      "32780",
+      "98700"
+    ],
+    "comforts": [
+      "Breakfast",
+      "AirConditioning",
+      "Workspace",
+      "BabySeat",
+      "Washer",
+      "Towels",
+      "Fridge"
+    ],
+    "name": [
+      "Steve Mackdonald",
+      "Andrey Zamyatin",
+      "Кирилл Пилил",
+      "Amanda Jhonson",
+      "Paul Litvin"
+    ],
+    "email": [
+      "email@email.com",
+      "yahoo@yahoo.com",
+      "yandex@yandex.ru",
+      "hotmail@hotmail.com",
+      "google@google.com"
+    ],
+    "avatar": [
+      "avatar-1.jpeg",
+      "avatar-2.jpeg",
+      "avatar-3.jpeg",
+      "avatar-4.jpeg",
+      "avatar-5.jpeg"
+    ],
+    "password": [
+      "password",
+      "1234567",
+      "qwerty123",
+      "lalalala",
+      "pass1234"
+    ],
+    "role": [
+      "Default",
+      "Pro"
+    ],
+    "latitude": [
+      "48.85661",
+      "50.938361",
+      "50.846557",
+      "52.370216",
+      "53.550341",
+      "51.225402"
+    ],
+    "longitude": [
+      "2.351499",
+      "6.959974",
+      "4.351697",
+      "4.895168",
+      "10.000654",
+      "6.776314"
+    ]
+  }
+}
