@@ -1,4 +1,4 @@
-import { Offer, UserRole, CitiesName, Comforts, HouseType } from '../types/index.js';
+import { Offer, UserRole, CitiesName, Comforts, HouseTypeEnum } from '../types/index.js';
 
 export function createOffer(offerData: string): Offer {
   const [
@@ -35,7 +35,7 @@ export function createOffer(offerData: string): Offer {
     isPremium: isPremium === 'true',
     isFavorite: isFavorite === 'true',
     rating: Number.parseInt(rating, 10),
-    houseType: HouseType[houseType as keyof typeof HouseType],
+    houseType: HouseTypeEnum[houseType as keyof typeof HouseTypeEnum],
     rooms: Number.parseInt(rooms, 10),
     guests: Number.parseInt(guests, 10),
     price: Number.parseInt(price, 10),

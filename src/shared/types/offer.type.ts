@@ -1,7 +1,7 @@
 import { User } from './user.type.js';
 import { City } from './cities.type.js';
-import { HouseType } from './house.type.js';
-import { Comforts } from './comforts.type.js';
+import { HouseTypeEnum } from './house-type.enum.js';
+import { Comforts } from './comforts.enum.js';
 
 export type Offer = {
   title: string;
@@ -13,7 +13,7 @@ export type Offer = {
   isPremium: boolean;
   isFavorite: boolean;
   rating: number;
-  houseType: HouseType;
+  houseType: HouseTypeEnum;
   rooms: number;
   guests: number;
   price: number;
