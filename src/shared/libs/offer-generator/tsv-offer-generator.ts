@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { OfferGenerator } from './offer-generator.interface.js';
-import { HouseType, MockServerData } from '../../types/index.js';
+import { HouseTypeEnum, MockServerData } from '../../types/index.js';
 import { generateRandomValue, getRandomItems, getRandomItem } from '../../helpers/index.js';
 
 const FIRST_WEEK_DAY = 1;
@@ -24,7 +24,7 @@ export class TSVOfferGenerator implements OfferGenerator {
     const isFavorite = getRandomItem<string>(this.mockData.isFavorite);
     const rating = getRandomItem<string>(this.mockData.rating);
     const houseType = getRandomItem<string>([
-      HouseType.Room, HouseType.Hotel, HouseType.Apartment, HouseType.House
+      HouseTypeEnum.Room, HouseTypeEnum.Hotel, HouseTypeEnum.Apartment, HouseTypeEnum.House
     ]);
     const rooms = getRandomItem<string>(this.mockData.rooms);
     const guests = getRandomItem<string>(this.mockData.guests);
