@@ -6,7 +6,6 @@ export enum UserRole {
 export type User = {
     name: string;
     email: string;
-    avatar: string;
-    password: string;
+    avatarPath: string;
     role: UserRole;
 }

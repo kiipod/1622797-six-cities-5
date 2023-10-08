@@ -6,7 +6,3 @@ export enum CitiesName {
     Hamburg = 'Hamburg',
     Dusseldorf = 'Dusseldorf'
 }
-
-export type City = {
-    name: CitiesName
-}
