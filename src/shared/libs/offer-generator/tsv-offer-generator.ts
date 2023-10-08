@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { OfferGenerator } from './offer-generator.interface.js';
-import { HouseTypeEnum, MockServerData } from '../../types/index.js';
+import { HouseType, MockServerData } from '../../types/index.js';
 import { generateRandomValue, getRandomItems, getRandomItem } from '../../helpers/index.js';
 
 const FIRST_WEEK_DAY = 1;
@@ -24,7 +24,7 @@ export class TSVOfferGenerator implements OfferGenerator {
     const isFavorite = getRandomItem<string>(this.mockData.isFavorite);
     const rating = getRandomItem<string>(this.mockData.rating);
     const houseType = getRandomItem<string>([
-      HouseTypeEnum.Room, HouseTypeEnum.Hotel, HouseTypeEnum.Apartment, HouseTypeEnum.House
+      HouseType.Room, HouseType.Hotel, HouseType.Apartment, HouseType.House
     ]);
     const rooms = getRandomItem<string>(this.mockData.rooms);
     const guests = getRandomItem<string>(this.mockData.guests);
@@ -32,8 +32,7 @@ export class TSVOfferGenerator implements OfferGenerator {
     const comforts = getRandomItems<string>(this.mockData.comforts).join(';');
     const name = getRandomItem<string>(this.mockData.name);
     const email = getRandomItem<string>(this.mockData.email);
-    const avatar = getRandomItem<string>(this.mockData.avatar);
-    const password = getRandomItem<string>(this.mockData.password);
+    const avatarPath = getRandomItem<string>(this.mockData.avatarPath);
     const role = getRandomItem<string>(this.mockData.role);
     const latitude = getRandomItem<string>(this.mockData.latitude);
     const longitude = getRandomItem<string>(this.mockData.longitude);
@@ -41,7 +40,7 @@ export class TSVOfferGenerator implements OfferGenerator {
     return [
       title, description, date, city, preview, photos, isPremium,
       isFavorite, rating, houseType, rooms, guests, price,
-      comforts, name, email, avatar, password, role, latitude, longitude
+      comforts, name, email, avatarPath, role, latitude, longitude
     ].join('\t');
   }
 }
