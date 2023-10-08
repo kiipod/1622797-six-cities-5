@@ -1,4 +1,4 @@
-import { Offer, UserRole, CitiesName, Comforts, HouseTypeEnum } from '../types/index.js';
+import { Offer, UserRole, CitiesName, Comforts, HouseType } from '../types/index.js';
 
 export function createOffer(offerData: string): Offer {
   const [
@@ -18,8 +18,7 @@ export function createOffer(offerData: string): Offer {
     comforts,
     name,
     email,
-    avatar,
-    password,
+    avatarPath,
     role,
     latitude,
     longitude
@@ -29,13 +28,13 @@ export function createOffer(offerData: string): Offer {
     title: title,
     description: description,
     date: new Date(date),
-    city: { name: CitiesName[city as keyof typeof CitiesName] },
+    city: CitiesName[city as keyof typeof CitiesName],
     preview: preview,
     photos: photos.split(';'),
     isPremium: isPremium === 'true',
     isFavorite: isFavorite === 'true',
-    rating: Number.parseInt(rating, 10),
-    houseType: HouseTypeEnum[houseType as keyof typeof HouseTypeEnum],
+    rating: Number.parseFloat(rating),
+    houseType: HouseType[houseType as keyof typeof HouseType],
     rooms: Number.parseInt(rooms, 10),
     guests: Number.parseInt(guests, 10),
     price: Number.parseInt(price, 10),
@@ -43,13 +42,9 @@ export function createOffer(offerData: string): Offer {
     author: {
       name: name,
       email: email,
-      avatar: avatar,
-      password: password,
+      avatarPath: avatarPath,
       role: UserRole[role as keyof typeof UserRole],
     },
-    location: {
-      latitude: Number.parseFloat(latitude),
-      longitude: Number.parseFloat(longitude),
-    }
+    location: { latitude, longitude }
   } as Offer;
 }
