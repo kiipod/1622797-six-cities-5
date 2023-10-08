@@ -14,8 +14,7 @@ export type MockServerData = {
     comforts: string[];
     name: string[];
     email: string[];
-    avatar: string[];
-    password: string[];
+    avatarPath: string[];
     role: string[];
     latitude: string[];
     longitude: string[];
