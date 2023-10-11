@@ -1,0 +1,606 @@
+openapi: 3.1.0
+
+info:
+  title: REST API сервер для проекта «Six Cities».
+  description: |-
+    * Список ресурсов и маршрутов сервера «Six Cities».
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 5.0.0
+
+tags:
+  - name: offers
+    description: Действия с предложениями.
+  - name: comments
+    description: Действия с комментариями.
+  - name: users
+    description: Действия с пользователем.
+
+paths:
+  /offers:
+    get:
+      tags:
+        - offers
+      summary: Получение предложений об аренде
+      description: Получает список предложений об аренде. По умолчанию сервис возвращает не больше 60 предложений по аренде.
+
+      responses:
+        "200":
+          description: Список предложений.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/listOffers'
+    post:
+      tags:
+        - offers
+      summary: Создание предложения об аренде
+      description: Создаёт предложение об аренде.
+
+      requestBody:
+        description: Информация для создания предложения об аренде.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/offer'
+        required: true
+
+      responses:
+        "200":
+          description: Предложение об аренде успешно создано.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+        "403":
+          description: Создавать предложения об аренде могут только авторизованные пользователи.
+
+  /offers/{offerId}:
+    get:
+      tags:
+        - offers
+      summary: Получение предложения об аренде
+      description: Получает предложение об аренде.
+
+      responses:
+        "200":
+          description: Предложение об аренде успешно получено.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+
+    patch:
+      tags:
+        - offers
+      summary: Редактирование предложения об аренде
+      description: Редактирует предложение об аренде по идентификатору.
+
+      requestBody:
+        description: Информация для редактирования предложения об аренде.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/offer'
+        required: true
+
+      responses:
+        "200":
+          description: Предложение об аренде успешно изменено.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+
+        "403":
+          description: Редактировать можно только свои предложения.
+
+    delete:
+      tags:
+        - offers
+      summary: Удаление предложения об аренде
+      description: Удаляет предложение об аренде по идентификатору.
+
+      responses:
+        "204":
+          description: Предложение об аренде успешно удалено.
+        "403":
+          description: Удалять можно только свои предложения.
+
+  /offers/premium:
+    get:
+      tags:
+        - offers
+      summary: Получение премиальных предложений об аренде
+      description: Получает список премиальных предложений об аренде. Сервис возвращает не больше 3 предложений с флагом «Premium».
+
+      responses:
+        "200":
+          description: Список премиальных предложений.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/listOffers'
+
+  /offers/favorite:
+    get:
+      tags:
+        - offers
+      summary: Получение избранных предложений об аренде
+      description: Получает список избранных предложений об аренде.
+
+      responses:
+        "200":
+          description: Список избранных предложений.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/listOffers'
+        "403":
+          description: Список избранных предложений доступен только авторизованным пользователям.
+
+  /offers/{offersId}/favorite:
+    post:
+      tags:
+        - offers
+      summary: Добавление предложения в Избранное
+      description: Изменяет статус Избранное предложения.
+
+      requestBody:
+        description: Информация для редактирования предложения об аренде.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                offerId:
+                  type: string
+                  example: 65211e7e615961c0f4cbefe8
+        required: true
+
+      responses:
+        "204":
+          description: Статус предложения Избранное успешно изменён.
+        "403":
+          description: Изменять статус может только авторизованный пользователь.
+
+    delete:
+      tags:
+        - offers
+      summary: Удаление предложения из Избранного
+      description: Изменяет статус Избранное предложения.
+
+      requestBody:
+        description: Информация для редактирования предложения об аренде.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                offerId:
+                  type: string
+                  example: 65211e7e615961c0f4cbefe8
+        required: true
+
+      responses:
+        "204":
+          description: Предложение об аренде успешно удалено из Избранного.
+        "403":
+          description: Изменять статус может только авторизованный пользователь.
+
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: Регистрация пользователя
+      description: Регистрирует нового пользователя.
+
+      requestBody:
+        description: Информация для создания нового пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createUser'
+        required: true
+
+        responses:
+          "201":
+            description: Пользователь зарегистрирован. Объект пользователя.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/authUser'
+
+          "409":
+            description: Пользователь с таким email уже существует.
+
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Авторизация пользователя
+      description: Авторизует пользователя на основе логина и пароля
+
+      requestBody:
+        description: Информация для авторизации пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/authUser'
+        required: true
+
+        responses:
+          "201":
+            description: Пользователь авторизован. Токен пользователя.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/userToken'
+          "401":
+            description: Неверный логин или пароль.
+
+  /users/{userId}:
+    get:
+      tags:
+        - users
+      summary: Проверка состояния пользователя
+      description: Возвращает информацию по авторизованному пользователю
+
+      requestBody:
+        description: Информация для проверки состояния пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userToken'
+        required: true
+
+        responses:
+          "200":
+            description: Информация по авторизованному пользователю.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/authUser'
+          "401":
+            description: Неверный логин или пароль.
+          "403":
+            description: Получить информацию о пользователе может только владелец аккаунта.
+
+  /users/{userId}/avatar:
+    post:
+      tags:
+        - users
+      summary: Загрузить изображение аватара
+      description: Загружает изображение аватара пользователя. Изображение
+        аватара должно быть в формате `png` или `jpg`.
+
+  /users/logout:
+    post:
+      tags:
+        - users
+      summary: Выход пользователя из закрытой части приложения
+      description: Выход пользователя из сервиса на основе токена.
+
+      requestBody:
+        description: Информация для выхода пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userToken'
+        required: true
+
+      responses:
+        "200":
+          description: Пользователь успешно вышел из приложения.
+        "401":
+          description: Неверный токен пользователя.
+
+  /comments/{offerId}:
+    get:
+      tags:
+        - comments
+      summary: Получение комментариев
+      description: Получает список комментариев для предложения. Сервис всегда возвращает список из 50 (или меньше) последних комментариев.
+
+      responses:
+        "200":
+          description: Список комментариев.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/comment'
+
+    post:
+      tags:
+        - comments
+      summary: Создание комментария
+      description: Создаёт новый комментарий для предложения.
+
+      requestBody:
+        description: Информация для создания комментария.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/draftComment'
+        required: true
+
+      responses:
+        "200":
+          description: Комментарий успешно создан.
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/comment'
+        "403":
+          description: Создавать комментарии могут только авторизованные пользователи.
+
+# Список компонентов для OPEN API
+components:
+  schemas:
+
+# Сущность предложение
+    offer:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 65219307def86da328c9ea9a
+
+        title:
+          type: string
+          example: Просторная квартира для долгосрочного проживания.
+
+        description:
+          type: string
+          example: Идеальное место для проживания во время вашего визита в город.
+
+        createdAt:
+          type: string
+          example: 2023-10-07T17:19:03.813Z
+
+        city:
+          type: string
+          example: Amsterdam
+
+        preview:
+          type: string
+          example: "preview-image-1.jpg"
+
+        photos:
+          type: array
+          example:
+            [
+              "general-image-1.jpg",
+              "general-image-2.jpg",
+              "general-image-3.jpg",
+              "general-image-4.jpg",
+              "general-image-5.jpg",
+              "general-image-6.jpg",
+            ]
+
+        isPremium:
+          type: boolean
+          example: true
+
+        isFavorite:
+          type: boolean
+          example: false
+
+        rating:
+          type: number
+          example: 4.5
+
+        houseType:
+          type: string
+          example: Apartment
+
+        rooms:
+          type: number
+          example: 2
+
+        guests:
+          type: number
+          example: 4
+
+        price:
+          type: number
+          example: 2000
+
+        comforts:
+          type: array
+          example: [ BABY_SEAT, WASHER, TOWELS ]
+
+        commentsCount:
+          type: number
+          example: 12
+
+        author:
+          type: object
+          $ref: '#/components/schemas/author'
+
+        location:
+          type: object
+          $ref: '#/components/schemas/location'
+
+    listOffers:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 65219307def86da328c9ea9a
+
+        title:
+          type: string
+          example: Просторная квартира для долгосрочного проживания.
+
+        createdAt:
+          type: string
+          example: 2023-10-07T17:19:03.813Z
+
+        city:
+          type: string
+          example: Amsterdam
+
+        preview:
+          type: string
+          example: "preview-image-1.jpg"
+
+        isPremium:
+          type: boolean
+          example: true
+
+        isFavorite:
+          type: boolean
+          example: false
+
+        rating:
+          type: number
+          example: 4.5
+
+        houseType:
+          type: string
+          example: Apartment
+
+        price:
+          type: number
+          example: 2000
+
+        commentsCount:
+          type: number
+          example: 12
+
+    location:
+      type: object
+      properties:
+        latitude:
+          type: string
+          example: '52.370216'
+        longitude:
+          type: string
+          example: '4.895168'
+
+# Сущность пользователь
+    createUser:
+      type: object
+      properties:
+        name:
+          type: string
+          example: User Name
+
+        email:
+          type: string
+          example: email@gmail.com
+
+        avatar:
+          type: string
+          example: "avatar.jpg"
+
+        role:
+          type: string
+          example: Обычный
+
+        password:
+          type: string
+          example: password
+
+    userToken:
+      type: string
+      properties:
+        bearerToken:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+
+    authUser:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+
+        name:
+          type: string
+          example: User Name
+
+        email:
+          type: string
+          example: email@gmail.com
+
+        avatar:
+          type: string
+          example: "avatar.jpg"
+
+        role:
+          type: string
+          example: Обычный
+
+# Сущность комментарии
+    comment:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 65219307def86da328c9ea9a
+
+        text:
+          type: string
+          example: Wow, this is Amazing House!!!
+
+        createdAt:
+          type: string
+          example: 2023-10-07T17:19:03.813Z
+
+        rating:
+          type: number
+          example: 4,2
+
+        author:
+          type: object
+          $ref: '#/components/schemas/author'
+
+    author:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 65211e7e615961c0f4cbefe8
+
+        name:
+          type: string
+          example: User Name
+
+        avatar:
+          type: string
+          example: avatar.jpg
+
+        role:
+          type: string
+          example: Обычный
+
+    draftComment:
+      type: object
+      properties:
+        text:
+          type: string
+          example: Wow, this is Amazing House!!!
+
+        rating:
+          type: number
+          example: 5
+
+        createdAt:
+          type: string
+          example: 2023-10-07T17:19:03.813Z
+
+        author:
+          type: object
+          $ref: '#/components/schemas/author'
