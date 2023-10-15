@@ -13,6 +13,7 @@ export class DefaultUserService implements UserService {
         @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>
   ) {}
 
+  // Метод отвечает за создание нового пользователя
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
     const user = new UserEntity(dto);
     user.setPassword(dto.password, salt);
@@ -23,10 +24,12 @@ export class DefaultUserService implements UserService {
     return result;
   }
 
+  // Метод отвечает за поиск по e-mail конкретного пользователя в БД
   public async findByEmail(email: string): Promise<DocumentType<UserEntity> | null> {
     return this.userModel.findOne({email});
   }
 
+  // Метод отвечает за создание нового пользователя с уникальным e-mail
   public async findOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
     const existedUser = await this.findByEmail(dto.email);
 
