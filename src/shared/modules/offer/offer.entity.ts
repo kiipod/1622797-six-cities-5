@@ -7,7 +7,7 @@ export interface OfferEntity extends defaultClasses.Base {}
 
 @modelOptions({
   schemaOptions: {
-    collection: 'offer'
+    collection: 'offers'
   },
   options: {
     allowMixed: Severity.ALLOW
@@ -56,13 +56,6 @@ export class OfferEntity extends defaultClasses.TimeStamps {
 
   @prop({
     required: true,
-    min: 1,
-    max: 5
-  })
-  public rating: number;
-
-  @prop({
-    required: true,
     type: () => String,
     enum: HouseType
   })
@@ -102,9 +95,6 @@ export class OfferEntity extends defaultClasses.TimeStamps {
     required: true
   })
   public authorId: Ref<UserEntity>;
-
-  @prop({default: 0})
-  public commentsCount!: number;
 
   @prop({
     required: true
