@@ -5,3 +5,7 @@ export * from './default-offer.service.js';
 export * from './offer.container.js';
 export * from './dto/update-offer.dto.js';
 export * from './offer.constant.js';
+export * from './type/param-cityname.type.js';
+export * from './type/create-offer-request.type.js';
+export * from './type/update-offer-request.type.js';
+export * from './type/param-offerid.type.js';

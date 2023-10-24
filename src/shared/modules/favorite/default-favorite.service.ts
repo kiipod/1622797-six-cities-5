@@ -18,13 +18,20 @@ export class DefaultFavoriteService implements FavoriteService {
       .exec();
   }
 
-  // Метод отвечает за добавление/удаление из Избранного конкретного объявления
-  public async createOrDelete(dto: FavoriteDto): Promise<DocumentType<FavoriteEntity> | null> {
-    const isExistFavoriteEntity = await this.favoriteModel.exists(dto) !== null;
-    if (isExistFavoriteEntity) {
-      return await this.favoriteModel.create(dto);
-    } else {
-      return await this.favoriteModel.findOneAndDelete(dto).exec();
-    }
+  // Метод отвечает за поиск у пользователя текущего предложения
+  public async findByUserOfferId(dto: FavoriteDto): Promise<DocumentType<FavoriteEntity>[]> {
+    return await this.favoriteModel
+      .find({ dto })
+      .exec();
+  }
+
+  // Метод отвечает за добавление в избранное объявления
+  public async createFavorite(dto: FavoriteDto): Promise<DocumentType<FavoriteEntity> | null> {
+    return await this.favoriteModel.create(dto);
+  }
+
+  // Метод отвечает за удаление из Избранного конкретного объявления
+  public async deleteFavorite(dto: FavoriteDto): Promise<DocumentType<FavoriteEntity> | null> {
+    return await this.favoriteModel.findOneAndDelete(dto).exec();
   }
 }

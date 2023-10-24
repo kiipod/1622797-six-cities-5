@@ -85,7 +85,7 @@ export class DefaultOfferService implements OfferService {
   }
 
   // Метод отвечает за показ списка объявлений
-  public async find(count: number): Promise<DocumentType<OfferEntity>[]> {
+  public async find(count?: number): Promise<DocumentType<OfferEntity>[]> {
     const limit = count ?? DEFAULT_OFFER_COUNT;
     return this.offerModel
       .aggregate([
