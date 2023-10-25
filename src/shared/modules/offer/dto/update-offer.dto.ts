@@ -14,7 +14,7 @@ import {
 } from 'class-validator';
 import { UpdateOfferValidationMessage } from './update-offer.messages.js';
 import { CitiesName, Comforts, HouseType, Location } from '../../../types/index.js';
-import {CreateOfferValidationMessage} from "./create-offer.messages.js";
+import { CreateOfferValidationMessage } from './create-offer.messages.js';
 
 export class UpdateOfferDto {
   @IsOptional()
