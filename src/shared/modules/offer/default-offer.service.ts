@@ -123,4 +123,9 @@ export class DefaultOfferService implements OfferService {
       ])
       .exec();
   }
+
+  // Метод отвечает за нахождение текущей записи в БД
+  public async exists(documentId: string): Promise<boolean> {
+    return (await this.offerModel.exists({ _id: documentId })) !== null;
+  }
 }
