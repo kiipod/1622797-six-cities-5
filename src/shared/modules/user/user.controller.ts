@@ -1,11 +1,12 @@
 import { inject, injectable } from 'inversify';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import {
   BaseController,
   HttpError,
   HttpMethod,
-  ValidateDtoMiddleware
+  ValidateDtoMiddleware, ValidateObjectIdMiddleware,
+  UploadFileMiddleware
 } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../types/index.js';
@@ -44,6 +45,16 @@ export class UserController extends BaseController {
         new ValidateDtoMiddleware(LoginUserDto)
       ]});
 
+    this.addRoute({
+      path: '/:userId/avatar',
+      method: HttpMethod.Post,
+      handler: this.uploadAvatar,
+      middlewares: [
+        new ValidateObjectIdMiddleware('userId'),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+      ]
+    });
+
     this.addRoute({ path: '/login', method: HttpMethod.Post, handler: this.checkToken });
 
     this.addRoute({ path: '/logout', method: HttpMethod.Post, handler: this.logout });
@@ -63,6 +74,13 @@ export class UserController extends BaseController {
 
     const result = await this.userService.create(body, this.configService.get('SALT'));
     this.created(res, fillDTO(UserRdo, result));
+  }
+
+  // Метод отвечает за загрузку аватара пользователя
+  public async uploadAvatar(req: Request, res: Response) {
+    this.created(res, {
+      filepath: req.file?.path
+    });
   }
 
   // Метод отвечает за авторизацию пользователя на сайте
