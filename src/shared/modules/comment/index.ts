@@ -4,3 +4,6 @@ export * from './dto/create-comment.dto.js';
 export * from './default-comment.service.js';
 export * from './comment.constant.js';
 export * from './comment.container.js';
+export * from './rdo/comment.rdo.js';
+export * from './type/create-comment-request.type.js';
+export * from './comment.controller.js';
