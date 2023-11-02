@@ -18,6 +18,8 @@ import { UserRdo } from './rdo/user.rdo.js';
 import { LoginUserRequest } from './type/login-user-request.type.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { LoginUserDto } from './dto/login-user.dto.js';
+import { AuthService } from '../auth/index.js';
+import { LoggedUserRdo } from './rdo/logged-user.rdo.js';
 
 @injectable()
 export class UserController extends BaseController {
@@ -25,6 +27,7 @@ export class UserController extends BaseController {
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.UserService) private readonly userService: UserService,
     @inject(Component.Config) private readonly configService: Config<RestSchema>,
+    @inject(Component.AuthService) private readonly authService: AuthService,
   ) {
     super(logger);
     this.logger.info('Register routes for UserController…');
@@ -55,9 +58,7 @@ export class UserController extends BaseController {
       ]
     });
 
-    this.addRoute({ path: '/login', method: HttpMethod.Post, handler: this.checkToken });
-
-    this.addRoute({ path: '/logout', method: HttpMethod.Post, handler: this.logout });
+    this.addRoute({ path: '/login', method: HttpMethod.Post, handler: this.checkAuth });
   }
 
   // Метод отвечает за создание нового пользователя
@@ -84,31 +85,29 @@ export class UserController extends BaseController {
   }
 
   // Метод отвечает за авторизацию пользователя на сайте
-  public async login({ body }: LoginUserRequest, _res: Response,): Promise<void> {
-    const existsUser = await this.userService.findByEmail(body.email);
+  public async login({ body }: LoginUserRequest, res: Response,): Promise<void> {
+    const user = await this.authService.verify(body);
+    const token = await this.authService.authenticate(user);
+    const responseData = fillDTO(LoggedUserRdo, {
+      email: user.email,
+      token,
+    });
 
-    if (!existsUser) {
-      throw new HttpError(
-        StatusCodes.UNAUTHORIZED,
-        `User with email ${body.email} not found.`,
-        'UserController',
-      );
-    }
-
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'Not implemented',
-      'UserController',
-    );
+    this.ok(res, responseData);
   }
 
   // Метод отвечает за проверку Bearer токена
-  public async checkToken(): Promise<void> {
-    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'Not implemented', 'UserController');
-  }
+  public async checkAuth({ tokenPayload: { email }}: Request, res: Response): Promise<void> {
+    const foundedUser = await this.userService.findByEmail(email);
 
-  // Метод отвечает за выход из закрытой части приложения
-  public async logout(): Promise<void> {
-    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'Not implemented', 'UserController');
+    if (!foundedUser) {
+      throw new HttpError(
+        StatusCodes.UNAUTHORIZED,
+        'Unauthorized',
+        'UserController'
+      );
+    }
+
+    this.ok(res, fillDTO(LoggedUserRdo, foundedUser));
   }
 }

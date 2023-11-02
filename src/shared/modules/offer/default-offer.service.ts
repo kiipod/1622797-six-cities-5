@@ -92,8 +92,8 @@ export class DefaultOfferService implements OfferService {
         ...this.commentsLookup,
         ...this.favoritesLookup,
         { $project: { title: 1, date: 1, city: 1, houseType: 1, price: 1, preview: 1, isPremium: 1 } },
-        { $sort: { offerCount: SortType.Down } },
-        { $limit: limit },
+        { $sort: { createdAt: SortType.Down } },
+        { $limit: limit }
       ])
       .exec();
   }
