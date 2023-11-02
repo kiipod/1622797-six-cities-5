@@ -5,7 +5,8 @@ import {
   HttpMethod,
   ValidateObjectIdMiddleware,
   ValidateDtoMiddleware,
-  DocumentExistsMiddleware
+  DocumentExistsMiddleware,
+  PrivateRouteMiddleware
 } from '../../libs/rest/index.js';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
@@ -31,13 +32,20 @@ export class FavoriteController extends BaseController {
 
     this.logger.info('Register routes for FavoriteController…');
 
-    this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.index });
+    this.addRoute({
+      path: '/',
+      method: HttpMethod.Get,
+      handler: this.index,
+      middlewares: [
+        new PrivateRouteMiddleware()
+      ]});
 
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(FavoriteDto)
       ]
@@ -48,6 +56,7 @@ export class FavoriteController extends BaseController {
       method: HttpMethod.Delete,
       handler: this.delete,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(FavoriteDto)
@@ -56,17 +65,16 @@ export class FavoriteController extends BaseController {
   }
 
   // Метод отвечает за поиск всех избранных предложений у пользователя
-  public async index(_req: Request, res: Response): Promise<void> {
-    const userId = '785578ywrw3yf4w';
-    const userFavorites = await this.favoriteService.findByUserId(userId);
+  public async index({ tokenPayload }: Request, res: Response): Promise<void> {
+    const userFavorites = await this.favoriteService.findByUserId(tokenPayload.id);
     const responseData = fillDTO(FavoriteRdo , userFavorites);
 
     this.ok(res, responseData);
   }
 
   // Метод отвечает за добавление предложения в список избранных
-  public async create({ body }: CreateFavoriteRequest, res: Response): Promise<void> {
-    const existsUserOffer = await this.favoriteService.findByUserOfferId(body);
+  public async create({ body, tokenPayload }: CreateFavoriteRequest, res: Response): Promise<void> {
+    const existsUserOffer = await this.favoriteService.findByUserOfferId(tokenPayload.id, body.offerId);
 
     if (existsUserOffer) {
       throw new HttpError(
@@ -76,23 +84,23 @@ export class FavoriteController extends BaseController {
       );
     }
 
-    const result = await this.favoriteService.createFavorite(body);
+    const result = await this.favoriteService.createFavorite({ ...body, userId: tokenPayload.id });
     this.created(res, fillDTO(FavoriteRdo, result));
   }
 
   // Метод отвечает за удаление предложения из списка избранных
-  public async delete({ body }: DeleteFavoriteRequest, res: Response): Promise<void> {
-    const existsUser = await this.favoriteService.findByUserOfferId(body);
+  public async delete({ body, tokenPayload }: DeleteFavoriteRequest, res: Response): Promise<void> {
+    const existsUserOffer = await this.favoriteService.findByUserOfferId(tokenPayload.id, body.offerId);
 
-    if (existsUser) {
+    if (!existsUserOffer) {
       throw new HttpError(
         StatusCodes.CONFLICT,
-        `User with favorite offer «${body.offerId}» exists.`,
+        `User with favorite offer «${body.offerId}» not exists.`,
         'UserController'
       );
     }
 
-    await this.favoriteService.deleteFavorite(body);
+    await this.favoriteService.deleteFavorite({ ...body, userId: tokenPayload.id });
     this.noContent(res, null);
   }
 }

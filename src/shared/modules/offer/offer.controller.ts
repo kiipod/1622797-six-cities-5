@@ -1,11 +1,13 @@
 import { inject } from 'inversify';
+import { StatusCodes } from 'http-status-codes';
 import {
   BaseController,
   HttpMethod,
   ValidateObjectIdMiddleware,
   DocumentExistsMiddleware,
   ValidateDtoMiddleware,
-  ValidateCityMiddleware
+  ValidateCityMiddleware,
+  PrivateRouteMiddleware, HttpError
 } from '../../libs/rest/index.js';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
@@ -31,6 +33,7 @@ export class OfferController extends BaseController {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateDtoMiddleware(CreateOfferDto)
       ]
     });
@@ -52,6 +55,7 @@ export class OfferController extends BaseController {
       method: HttpMethod.Put,
       handler: this.updateById,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
         new ValidateDtoMiddleware(UpdateOfferDto)
@@ -63,6 +67,7 @@ export class OfferController extends BaseController {
       method: HttpMethod.Delete,
       handler: this.deleteById,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
       ]
@@ -89,8 +94,8 @@ export class OfferController extends BaseController {
   }
 
   // Метод отвечает за создание нового предложения
-  public async create({body}: CreateOfferRequest, res: Response): Promise<void> {
-    const result = await this.offerService.create(body);
+  public async create({ body, tokenPayload }: CreateOfferRequest, res: Response): Promise<void> {
+    const result = await this.offerService.create({ ...body, authorId: tokenPayload.id });
     const newOffer = await this.offerService.findById(result.id);
 
     this.created(res, fillDTO(OfferRdo, newOffer));
@@ -112,16 +117,28 @@ export class OfferController extends BaseController {
   }
 
   // Метод отвечает за обновления конкретного предложения
-  public async updateById({ body, params }: Request<ParamOfferId, unknown, UpdateOfferDto>, res: Response): Promise<void> {
+  public async updateById({ body, params, tokenPayload }: Request<ParamOfferId, unknown, UpdateOfferDto>, res: Response): Promise<void> {
     const { offerId } = params;
+    const currentOffer = await this.offerService.findById(offerId);
+
+    if (currentOffer && currentOffer.authorId.toString() !== tokenPayload.id) {
+      throw new HttpError(StatusCodes.METHOD_NOT_ALLOWED, 'Only the author has the right to change the offer');
+    }
+
     const updatedOffer = await this.offerService.updateById(offerId, body);
 
     this.ok(res, fillDTO(OfferRdo, updatedOffer));
   }
 
   // Метод отвечает за удаление конкретного предложения
-  public async deleteById({ params }: Request<ParamOfferId>, res: Response): Promise<void> {
+  public async deleteById({ params, tokenPayload }: Request<ParamOfferId>, res: Response): Promise<void> {
     const { offerId } = params;
+    const currentOffer = await this.offerService.findById(offerId);
+
+    if (currentOffer && currentOffer.authorId.toString() !== tokenPayload.id) {
+      throw new HttpError(StatusCodes.METHOD_NOT_ALLOWED, 'Only the author has the right to delete the offer');
+    }
+
     await this.commentService.deleteByOfferId(offerId);
 
     this.noContent(res, {});

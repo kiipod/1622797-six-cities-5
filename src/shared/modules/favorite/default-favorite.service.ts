@@ -19,9 +19,9 @@ export class DefaultFavoriteService implements FavoriteService {
   }
 
   // Метод отвечает за поиск у пользователя текущего предложения
-  public async findByUserOfferId(dto: FavoriteDto): Promise<DocumentType<FavoriteEntity>[]> {
+  public async findByUserOfferId(userId: string, offerId: string): Promise<DocumentType<FavoriteEntity>[]> {
     return await this.favoriteModel
-      .find({ dto })
+      .find({ userId, offerId })
       .exec();
   }
 
