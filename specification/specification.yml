@@ -10,14 +10,102 @@ info:
   version: 5.0.0
 
 tags:
-  - name: offers
-    description: Действия с предложениями.
-  - name: comments
-    description: Действия с комментариями.
   - name: users
     description: Действия с пользователем.
+  - name: offers
+    description: Действия с предложениями.
+  - name: favorites
+    description: Действия с избранными
+  - name: comments
+    description: Действия с комментариями.
 
 paths:
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: Регистрация пользователя
+      description: Регистрирует нового пользователя.
+
+      requestBody:
+        description: Информация для создания нового пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createUser'
+        required: true
+
+        responses:
+          "201":
+            description: Пользователь зарегистрирован. Объект пользователя.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/authUser'
+
+          "409":
+            description: Пользователь с таким email уже существует.
+
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Авторизация пользователя
+      description: Авторизует пользователя на основе логина и пароля
+
+      requestBody:
+        description: Информация для авторизации пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/authUser'
+        required: true
+
+        responses:
+          "201":
+            description: Пользователь авторизован. Токен пользователя.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/userToken'
+          "401":
+            description: Неверный логин или пароль.
+
+  /users/{userId}:
+    get:
+      tags:
+        - users
+      summary: Проверка состояния пользователя
+      description: Возвращает информацию по авторизованному пользователю
+
+      requestBody:
+        description: Информация для проверки состояния пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userToken'
+        required: true
+
+        responses:
+          "200":
+            description: Информация по авторизованному пользователю.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/authUser'
+          "401":
+            description: Неверный логин или пароль.
+          "403":
+            description: Доступ запрещен.
+
+  /users/{userId}/avatar:
+    post:
+      tags:
+        - users
+      summary: Загрузить изображение аватара
+      description: Загружает изображение аватара пользователя. Изображение
+        аватара должно быть в формате `png` или `jpg`.
+
   /offers:
     get:
       tags:
@@ -110,7 +198,7 @@ paths:
         "403":
           description: Удалять можно только свои предложения.
 
-  /offers/premium:
+  /offers/premium/{cityName}:
     get:
       tags:
         - offers
@@ -127,10 +215,27 @@ paths:
                 items:
                   $ref: '#/components/schemas/listOffers'
 
-  /offers/favorite:
+  /offers/{offerId}/comments/:
     get:
       tags:
         - offers
+      summary: Получение комментариев
+      description: Получает список комментариев для предложения. Сервис всегда возвращает список из 50 (или меньше) последних комментариев.
+
+      responses:
+        "200":
+          description: Список комментариев.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/comment'
+
+  /favorites:
+    get:
+      tags:
+        - favorites
       summary: Получение избранных предложений об аренде
       description: Получает список избранных предложений об аренде.
 
@@ -146,10 +251,10 @@ paths:
         "403":
           description: Список избранных предложений доступен только авторизованным пользователям.
 
-  /offers/{offersId}/favorite:
+  /favorites/{offerId}:
     post:
       tags:
-        - offers
+        - favorites
       summary: Добавление предложения в Избранное
       description: Изменяет статус Избранное предложения.
 
@@ -173,7 +278,7 @@ paths:
 
     delete:
       tags:
-        - offers
+        - favorites
       summary: Удаление предложения из Избранного
       description: Изменяет статус Избранное предложения.
 
@@ -195,130 +300,7 @@ paths:
         "403":
           description: Изменять статус может только авторизованный пользователь.
 
-  /users/register:
-    post:
-      tags:
-        - users
-      summary: Регистрация пользователя
-      description: Регистрирует нового пользователя.
-
-      requestBody:
-        description: Информация для создания нового пользователя.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/createUser'
-        required: true
-
-        responses:
-          "201":
-            description: Пользователь зарегистрирован. Объект пользователя.
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/authUser'
-
-          "409":
-            description: Пользователь с таким email уже существует.
-
-  /users/login:
-    post:
-      tags:
-        - users
-      summary: Авторизация пользователя
-      description: Авторизует пользователя на основе логина и пароля
-
-      requestBody:
-        description: Информация для авторизации пользователя.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/authUser'
-        required: true
-
-        responses:
-          "201":
-            description: Пользователь авторизован. Токен пользователя.
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/userToken'
-          "401":
-            description: Неверный логин или пароль.
-
-  /users/{userId}:
-    get:
-      tags:
-        - users
-      summary: Проверка состояния пользователя
-      description: Возвращает информацию по авторизованному пользователю
-
-      requestBody:
-        description: Информация для проверки состояния пользователя.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/userToken'
-        required: true
-
-        responses:
-          "200":
-            description: Информация по авторизованному пользователю.
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/authUser'
-          "401":
-            description: Неверный логин или пароль.
-          "403":
-            description: Получить информацию о пользователе может только владелец аккаунта.
-
-  /users/{userId}/avatar:
-    post:
-      tags:
-        - users
-      summary: Загрузить изображение аватара
-      description: Загружает изображение аватара пользователя. Изображение
-        аватара должно быть в формате `png` или `jpg`.
-
-  /users/logout:
-    post:
-      tags:
-        - users
-      summary: Выход пользователя из закрытой части приложения
-      description: Выход пользователя из сервиса на основе токена.
-
-      requestBody:
-        description: Информация для выхода пользователя.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/userToken'
-        required: true
-
-      responses:
-        "200":
-          description: Пользователь успешно вышел из приложения.
-        "401":
-          description: Неверный токен пользователя.
-
-  /comments/{offerId}:
-    get:
-      tags:
-        - comments
-      summary: Получение комментариев
-      description: Получает список комментариев для предложения. Сервис всегда возвращает список из 50 (или меньше) последних комментариев.
-
-      responses:
-        "200":
-          description: Список комментариев.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/comment'
-
+  /comments:
     post:
       tags:
         - comments
