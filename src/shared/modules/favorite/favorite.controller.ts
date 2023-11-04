@@ -84,7 +84,7 @@ export class FavoriteController extends BaseController {
       );
     }
 
-    const result = await this.favoriteService.createFavorite({ ...body, userId: tokenPayload.id });
+    const result = await this.favoriteService.create({ ...body, userId: tokenPayload.id });
     this.created(res, fillDTO(FavoriteRdo, result));
   }
 
@@ -100,7 +100,7 @@ export class FavoriteController extends BaseController {
       );
     }
 
-    await this.favoriteService.deleteFavorite({ ...body, userId: tokenPayload.id });
+    await this.favoriteService.delete({ ...body, userId: tokenPayload.id });
     this.noContent(res, null);
   }
 }
