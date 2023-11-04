@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {SortType} from "../../types/index.js";
+import { SortType } from '../../types/index.js';
 
 // Агрегация количества комментариев и рейтинга
 export const commentsPipeline = [
