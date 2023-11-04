@@ -1,6 +1,4 @@
 import {
-  ArrayMaxSize,
-  ArrayMinSize,
   IsArray,
   IsDateString,
   IsEnum,
@@ -32,12 +30,6 @@ export class CreateOfferDto {
 
   @MaxLength(256, { message: CreateOfferValidationMessage.photos.maxLength })
   public preview: string;
-
-  @IsArray({ message: CreateOfferValidationMessage.photos.invalidFormat })
-  @MaxLength(256, { message: CreateOfferValidationMessage.photos.maxLength })
-  @ArrayMinSize(6, { message: CreateOfferValidationMessage.photos.invalidSize })
-  @ArrayMaxSize(6, { message: CreateOfferValidationMessage.photos.invalidSize })
-  public photos: string[];
 
   @IsBoolean({ message: CreateOfferValidationMessage.isPremium.invalidFormat })
   public isPremium: boolean;

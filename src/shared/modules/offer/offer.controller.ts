@@ -7,7 +7,8 @@ import {
   DocumentExistsMiddleware,
   ValidateDtoMiddleware,
   ValidateCityMiddleware,
-  PrivateRouteMiddleware, HttpError
+  PrivateRouteMiddleware, HttpError,
+  UploadFileMiddleware
 } from '../../libs/rest/index.js';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
@@ -17,12 +18,15 @@ import { CreateOfferRequest, ParamCityName, ParamOfferId, DefaultOfferService, U
 import { OfferRdo, OfferPreviewRdo } from './rdo/index.js';
 import { CommentService, CommentRdo } from '../comment/index.js';
 import { CreateOfferDto } from './index.js';
+import { Config, RestSchema } from '../../libs/config/index.js';
+import { UploadImageRdo } from './rdo/upload-image.rdo.js';
 
 export class OfferController extends BaseController {
   constructor(
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.OfferService) private readonly offerService: DefaultOfferService,
-    @inject(Component.CommentService) private readonly commentService: CommentService
+    @inject(Component.CommentService) private readonly commentService: CommentService,
+    @inject(Component.Config) private readonly configService: Config<RestSchema>,
   ) {
     super(logger);
 
@@ -91,6 +95,33 @@ export class OfferController extends BaseController {
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
       ]
     });
+
+    this.addRoute({
+      path: '/:offerId/photos',
+      method: HttpMethod.Post,
+      handler: this.uploadImage,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('offerId'),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'photos'),
+      ]
+    });
+  }
+
+  // Метод отвечает за показ списка предложений
+  public async find({ query, tokenPayload }: Request, res: Response): Promise<void> {
+    const count = Number(query);
+    const result = await this.offerService.find(count, tokenPayload?.id);
+
+    this.ok(res,fillDTO(OfferPreviewRdo, result));
+  }
+
+  // Метод отвечает за показ всей информации по выбранному предложению
+  public async findById({ params, tokenPayload }: Request<ParamOfferId>, res: Response): Promise<void> {
+    const { offerId } = params;
+    const existOffer = await this.offerService.findById(offerId, tokenPayload?.id);
+
+    this.ok(res, fillDTO(OfferRdo, existOffer));
   }
 
   // Метод отвечает за создание нового предложения
@@ -99,21 +130,6 @@ export class OfferController extends BaseController {
     const newOffer = await this.offerService.findById(result.id);
 
     this.created(res, fillDTO(OfferRdo, newOffer));
-  }
-
-  // Метод отвечает за показ списка предложений
-  public async find(_req: Request, res: Response): Promise<void> {
-    const result = await this.offerService.find();
-
-    this.ok(res,fillDTO(OfferPreviewRdo, result));
-  }
-
-  // Метод отвечает за показ всей информации по выбранному предложению
-  public async findById({ params }: Request<ParamOfferId>, res: Response): Promise<void> {
-    const { offerId } = params;
-    const existOffer = await this.offerService.findById(offerId);
-
-    this.ok(res, fillDTO(OfferRdo, existOffer));
   }
 
   // Метод отвечает за обновления конкретного предложения
@@ -145,9 +161,9 @@ export class OfferController extends BaseController {
   }
 
   // Метод отвечает за поиск премиальных предложений в выбранном городе
-  public async getPremium({ params }: Request<ParamCityName>, res: Response): Promise<void> {
+  public async getPremium({ params, tokenPayload }: Request<ParamCityName>, res: Response): Promise<void> {
     const { cityName } = params;
-    const premium = await this.offerService.findPremiumByCity(cityName);
+    const premium = await this.offerService.findPremiumByCity(cityName, tokenPayload?.id);
 
     this.ok(res, fillDTO(OfferPreviewRdo, premium));
   }
@@ -158,5 +174,14 @@ export class OfferController extends BaseController {
     const comments = await this.commentService.findByOfferId(offerId);
 
     this.ok(res, fillDTO(CommentRdo, comments));
+  }
+
+  // Метод отвечает за загрузку фотографий к предложению
+  public async uploadImage({ params, file } : Request<ParamOfferId>, res: Response) {
+    const { offerId } = params;
+    const updateDto = { photos: file?.filename };
+    await this.offerService.updateById(offerId, updateDto);
+
+    this.created(res, fillDTO(UploadImageRdo, updateDto));
   }
 }

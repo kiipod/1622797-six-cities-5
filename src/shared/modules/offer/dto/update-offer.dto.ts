@@ -40,7 +40,7 @@ export class UpdateOfferDto {
   @MaxLength(256, { message: UpdateOfferValidationMessage.photos.maxLength })
   @ArrayMinSize(6, { message: UpdateOfferValidationMessage.photos.invalidSize })
   @ArrayMaxSize(6, { message: UpdateOfferValidationMessage.photos.invalidSize })
-  public photos?: string[];
+  public photos?: string;
 
   @IsOptional()
   @IsBoolean({ message: UpdateOfferValidationMessage.isPremium.invalidFormat })

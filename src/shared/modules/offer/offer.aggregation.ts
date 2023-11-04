@@ -1,3 +1,6 @@
+import mongoose from 'mongoose';
+
+// Агрегация количества комментариев и рейтинга
 export const commentsPipeline = [
   {
     $lookup: {
@@ -17,20 +20,26 @@ export const commentsPipeline = [
 ];
 
 // Агрегация избранных объявлений пользователя
-export const favoritesPipeline = [
+export const favoritesPipeline = (userId: string) => ([
   {
     $lookup: {
       from: 'favorites',
-      let: { offerId: '$_id', userId: 'userId' },
+      let: { offerId: '$_id' },
       pipeline: [ { $match: { $expr: { $and: [
         { $eq: ['$$offerId', '$$offerId'] },
-        { $eq: [ '$userId', '$$userId' ] }
+        { $eq: [ new mongoose.Types.ObjectId(userId), '$userId' ] }
       ] } } } ],
       as: 'favorites',
     },
   },
   { $addFields: { isFavorite: { $toBool: { $size: '$favorites' } } } },
   { $unset: 'favorites' }
+]);
+
+export const defaultFavoritePipeline = [
+  { $addFields:
+      { isFavorite: false }
+  }
 ];
 
 export const authorPipeline = [
@@ -47,33 +56,8 @@ export const authorPipeline = [
       author: { $arrayElemAt: ['$users', 0] },
     },
   },
+  { $project: { _id: 0 } },
   {
     $unset: ['users'],
-  },
-];
-
-export const finalPipeline = [
-  {
-    $project: {
-      _id: 0,
-      id: { $toString: '$_id' },
-      author: 1,
-      city: 1,
-      commentsCount: { $size: '$comments' },
-      rating: { $ifNull: [{ $avg: '$comments.grade' }, 0] },
-      isFavorite: { $in: ['$_id', { $ifNull: ['$user.favorites', []] }] },
-      preview: { $arrayElemAt: ['$images', 0] },
-      date: 1,
-      isPremium: 1,
-      price: 1,
-      title: 1,
-      description: 1,
-      location: 1,
-      photos: 1,
-      comforts: 1,
-      houseType: 1,
-      rooms: 1,
-      guests: 1
-    },
   },
 ];
