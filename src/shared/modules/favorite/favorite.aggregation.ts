@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { SortType } from '../../types/index.js';
 
 // Агрегация количества комментариев и рейтинга
 export const commentsPipeline = [
@@ -36,28 +37,22 @@ export const favoritesPipeline = (userId: string) => ([
   { $unset: 'favorites' }
 ]);
 
-export const defaultFavoritePipeline = [
-  { $addFields:
-      { isFavorite: false }
-  }
-];
-
-export const authorPipeline = [
+export const offerPipeline = ([
   {
     $lookup: {
-      from: 'users',
-      localField: 'authorId',
-      foreignField: '_id',
-      as: 'users',
-    },
+      from: 'offers',
+      let: { offerId: '$offerId' },
+      pipeline: [
+        { $match:
+              { $expr:
+                    { $eq: [ '$_id', '$$offerId' ] },
+              }
+        },
+      ],
+      as: 'offer'
+    }
   },
-  {
-    $addFields: {
-      author: { $arrayElemAt: ['$users', 0] },
-    },
-  },
-  { $project: { _id: 0 } },
-  {
-    $unset: ['users'],
-  },
-];
+  { $project: { title: 1, date: 1, city: 1, houseType: 1, price: 1, preview: 1, isPremium: 1 } },
+  { $sort: { createdAt: SortType.Down } },
+  { $unset: ['offers'] }
+]);

@@ -4,6 +4,7 @@ import { FavoriteDto } from './dto/favorite.dto.js';
 
 export interface FavoriteService {
   findByUserId(userId: string): Promise<DocumentType<FavoriteEntity>[]>;
-  createFavorite(dto: FavoriteDto): Promise<DocumentType<FavoriteEntity> | null>;
-  deleteFavorite(dto: FavoriteDto): Promise<DocumentType<FavoriteEntity> | null>;
+  findByUserOfferId(userId: string, offerId: string): Promise<DocumentType<FavoriteEntity>[]>;
+  create(dto: FavoriteDto): Promise<DocumentType<FavoriteEntity> | null>;
+  delete(dto: FavoriteDto): Promise<DocumentType<FavoriteEntity> | null>;
 }

@@ -5,11 +5,11 @@ import { OfferEntity } from './offer.entity.js';
 import { DocumentExists } from '../../types/index.js';
 
 export interface OfferService extends DocumentExists {
-  create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>>;
-  findById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   find(count: number): Promise<DocumentType<OfferEntity>[]>;
-  deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
+  findById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
+  create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>>;
   updateById(offerId: string, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null>;
+  deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   findPremiumByCity(city: string): Promise<DocumentType<OfferEntity>[]>;
   exists(documentId: string): Promise<boolean>;
 }

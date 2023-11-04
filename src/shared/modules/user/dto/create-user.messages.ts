@@ -6,9 +6,6 @@ export const CreateUserMessages = {
   email: {
     invalidFormat: 'Email must be a valid address'
   },
-  avatarPath: {
-    invalidFormat: 'avatarPath is required',
-  },
   password: {
     invalidFormat: 'Password is required',
     lengthField: 'min length for password is 6, max is 12'
