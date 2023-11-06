@@ -4,9 +4,7 @@ import { inject, injectable } from 'inversify';
 import { DatabaseClient } from './database-client.interface.js';
 import { Component } from '../../types/index.js';
 import { Logger } from '../logger/index.js';
-
-const RETRY_COUNT = 5;
-const RETRY_TIMEOUT = 1000;
+import { RETRY_COUNT, RETRY_TIMEOUT } from './database.constant.js';
 
 @injectable()
 export class MongoDatabaseClient implements DatabaseClient {
