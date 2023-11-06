@@ -2,9 +2,7 @@ import dayjs from 'dayjs';
 import { OfferGenerator } from './offer-generator.interface.js';
 import { HouseType, MockServerData } from '../../types/index.js';
 import { generateRandomValue, getRandomItems, getRandomItem } from '../../helpers/index.js';
-
-const FIRST_WEEK_DAY = 1;
-const LAST_WEEK_DAY = 7;
+import { FIRST_WEEK_DAY, LAST_WEEK_DAY } from './offer-generator.constant.js';
 
 export class TSVOfferGenerator implements OfferGenerator {
   constructor(
