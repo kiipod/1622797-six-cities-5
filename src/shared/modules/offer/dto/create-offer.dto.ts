@@ -12,14 +12,27 @@ import {
 } from 'class-validator';
 import { CreateOfferValidationMessage } from './create-offer.messages.js';
 import { CitiesName, Comforts, HouseType, Location } from '../../../types/index.js';
+import {
+  MIN_TITLE_LENGTH,
+  MAX_TITLE_LENGTH,
+  MIN_DESCRIPTION_LENGTH,
+  MAX_DESCRIPTION_LENGTH,
+  MAX_FILENAME_LENGTH,
+  MIN_ROOMS_VALUE,
+  MAX_ROOMS_VALUE,
+  MIN_GUESTS_VALUE,
+  MAX_GUESTS_VALUE,
+  MIN_PRICE_VALUE,
+  MAX_PRICE_VALUE
+} from '../offer.constant.js';
 
 export class CreateOfferDto {
-  @MinLength(10, { message: CreateOfferValidationMessage.title.minLength })
-  @MaxLength(100, { message: CreateOfferValidationMessage.title.maxLength })
+  @MinLength(MIN_TITLE_LENGTH, { message: CreateOfferValidationMessage.title.minLength })
+  @MaxLength(MAX_TITLE_LENGTH, { message: CreateOfferValidationMessage.title.maxLength })
   public title: string;
 
-  @MinLength(20, { message: CreateOfferValidationMessage.description.minLength })
-  @MaxLength(1024, { message: CreateOfferValidationMessage.description.maxLength })
+  @MinLength(MIN_DESCRIPTION_LENGTH, { message: CreateOfferValidationMessage.description.minLength })
+  @MaxLength(MAX_DESCRIPTION_LENGTH, { message: CreateOfferValidationMessage.description.maxLength })
   public description: string;
 
   @IsDateString({}, { message: CreateOfferValidationMessage.date.invalidFormat })
@@ -28,7 +41,7 @@ export class CreateOfferDto {
   @IsEnum(CitiesName, { message: CreateOfferValidationMessage.city.invalid })
   public city: CitiesName;
 
-  @MaxLength(256, { message: CreateOfferValidationMessage.photos.maxLength })
+  @MaxLength(MAX_FILENAME_LENGTH, { message: CreateOfferValidationMessage.photos.maxLength })
   public preview: string;
 
   @IsBoolean({ message: CreateOfferValidationMessage.isPremium.invalidFormat })
@@ -38,18 +51,18 @@ export class CreateOfferDto {
   public houseType: HouseType;
 
   @IsInt({ message: CreateOfferValidationMessage.rooms.invalidFormat })
-  @Min(1, { message: CreateOfferValidationMessage.rooms.minValue })
-  @Max(8, { message: CreateOfferValidationMessage.rooms.maxValue })
+  @Min(MIN_ROOMS_VALUE, { message: CreateOfferValidationMessage.rooms.minValue })
+  @Max(MAX_ROOMS_VALUE, { message: CreateOfferValidationMessage.rooms.maxValue })
   public rooms: number;
 
   @IsInt({ message: CreateOfferValidationMessage.guests.invalidFormat })
-  @Min(1, { message: CreateOfferValidationMessage.guests.minValue })
-  @Max(10, { message: CreateOfferValidationMessage.guests.maxValue })
+  @Min(MIN_GUESTS_VALUE, { message: CreateOfferValidationMessage.guests.minValue })
+  @Max(MAX_GUESTS_VALUE, { message: CreateOfferValidationMessage.guests.maxValue })
   public guests: number;
 
   @IsInt({ message: CreateOfferValidationMessage.price.invalidFormat })
-  @Min(100, { message: CreateOfferValidationMessage.price.minValue })
-  @Max(100000, { message: CreateOfferValidationMessage.price.maxValue })
+  @Min(MIN_PRICE_VALUE, { message: CreateOfferValidationMessage.price.minValue })
+  @Max(MAX_PRICE_VALUE, { message: CreateOfferValidationMessage.price.maxValue })
   public price: number;
 
   @IsArray({ message: CreateOfferValidationMessage.comforts.invalidFormat })
